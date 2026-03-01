@@ -1,0 +1,1638 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>École du Prédicateur</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;0,700;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0E0B08;
+  --ink2: #1C1610;
+  --ink3: #2A1F14;
+  --gold: #C8973A;
+  --gold2: #E4BA6A;
+  --gold3: #F5D98A;
+  --cream: #F2E8D5;
+  --cream2: #E8D9BC;
+  --red: #8B1A1A;
+  --green: #1A5C2A;
+  --text: #EDE0C4;
+  --muted: #8A7558;
+  --border: rgba(200,151,58,0.2);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--ink);
+  color: var(--text);
+  font-family: 'EB Garamond', Georgia, serif;
+  min-height: 100vh;
+  font-size: 16px;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 15% 80%, rgba(200,151,58,0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 80% at 85% 10%, rgba(139,26,26,0.07) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+
+/* ===== SIDEBAR ===== */
+.layout { display: flex; min-height: 100vh; }
+
+.sidebar {
+  width: 260px;
+  background: var(--ink2);
+  border-right: 1px solid var(--border);
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s;
+}
+
+.sidebar-logo {
+  padding: 28px 24px 20px;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+}
+
+.sidebar-logo .cross { font-size: 2rem; color: var(--gold); display: block; margin-bottom: 8px; }
+.sidebar-logo h1 { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--gold2); letter-spacing: 2px; line-height: 1.4; }
+.sidebar-logo p { font-size: 0.75rem; color: var(--muted); margin-top: 4px; letter-spacing: 1px; }
+
+.sidebar-progress-wrap {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-progress-wrap .label {
+  font-size: 0.75rem;
+  color: var(--muted);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: flex; justify-content: space-between;
+}
+
+.sidebar-progress-wrap .label span { color: var(--gold); }
+
+.progress-bar { height: 5px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold3)); border-radius: 3px; transition: width 0.6s ease; }
+
+.nav { flex: 1; overflow-y: auto; padding: 12px 0; }
+.nav::-webkit-scrollbar { width: 3px; }
+.nav::-webkit-scrollbar-thumb { background: var(--gold); opacity: 0.3; }
+
+.nav-section {
+  padding: 8px 24px 4px;
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 8px;
+}
+
+.nav-btn {
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; padding: 10px 24px;
+  background: transparent; border: none;
+  color: var(--muted); font-family: 'EB Garamond', serif;
+  font-size: 1rem; cursor: pointer;
+  transition: all 0.2s; text-align: left;
+  position: relative;
+}
+
+.nav-btn:hover { color: var(--text); background: rgba(200,151,58,0.06); }
+
+.nav-btn.active {
+  color: var(--gold2);
+  background: rgba(200,151,58,0.1);
+}
+
+.nav-btn.active::before {
+  content: '';
+  position: absolute; left: 0; top: 20%; bottom: 20%;
+  width: 3px; background: var(--gold);
+  border-radius: 0 2px 2px 0;
+}
+
+.nav-btn .icon { font-size: 1.1rem; width: 20px; text-align: center; }
+.nav-btn .badge {
+  margin-left: auto;
+  background: var(--red);
+  color: white; font-size: 0.65rem;
+  padding: 2px 6px; border-radius: 10px;
+}
+.nav-btn .done { margin-left: auto; color: var(--green); font-size: 0.85rem; }
+
+/* ===== MAIN ===== */
+.main {
+  margin-left: 260px;
+  flex: 1;
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}
+
+.panel { display: none; padding: 40px 44px 80px; animation: fadeIn 0.4s; }
+.panel.active { display: block; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+.panel-header {
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.panel-header h2 {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  color: var(--gold2);
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+.panel-header p { color: var(--muted); font-style: italic; font-size: 1.1rem; }
+
+/* ===== COMPONENTS ===== */
+.card {
+  background: var(--ink2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px 28px;
+  margin-bottom: 20px;
+}
+
+.card h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.05rem;
+  color: var(--gold2);
+  margin-bottom: 14px;
+  letter-spacing: 0.5px;
+}
+
+.gold-line {
+  height: 1px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+  margin: 20px 0;
+}
+
+.verse-block {
+  background: rgba(200,151,58,0.06);
+  border-left: 3px solid var(--gold);
+  padding: 16px 20px;
+  border-radius: 0 8px 8px 0;
+  margin: 14px 0;
+  font-style: italic;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: var(--cream2);
+}
+
+.verse-ref { color: var(--gold); font-style: normal; font-size: 0.9rem; font-weight: 600; display: block; margin-top: 6px; }
+
+/* Buttons */
+.btn {
+  padding: 11px 24px;
+  border-radius: 8px;
+  font-family: 'EB Garamond', serif;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.btn-gold {
+  background: linear-gradient(135deg, var(--gold), #9A6E20);
+  color: var(--ink);
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.btn-gold:hover { transform: translateY(-1px); box-shadow: 0 5px 18px rgba(200,151,58,0.3); }
+.btn-gold:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.btn-outline:hover { border-color: var(--gold); color: var(--gold2); }
+
+/* Form elements */
+.form-group { margin-bottom: 18px; }
+.form-group label {
+  display: block;
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 11px 16px;
+  color: var(--text);
+  font-family: 'EB Garamond', serif;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus { border-color: var(--gold); }
+.form-group textarea { resize: vertical; min-height: 90px; }
+.form-group select option { background: var(--ink2); }
+
+/* Result box */
+.result {
+  background: rgba(200,151,58,0.05);
+  border: 1px solid rgba(200,151,58,0.25);
+  border-radius: 12px;
+  padding: 24px 28px;
+  margin-top: 20px;
+  line-height: 1.9;
+  font-size: 1.05rem;
+  display: none;
+  white-space: pre-wrap;
+}
+.result.show { display: block; animation: fadeIn 0.5s; }
+
+/* Chat */
+.chat-wrap {
+  background: rgba(0,0,0,0.25);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  height: 400px;
+  overflow-y: auto;
+  padding: 20px;
+  margin-bottom: 16px;
+  scroll-behavior: smooth;
+}
+.chat-wrap::-webkit-scrollbar { width: 4px; }
+.chat-wrap::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+
+.msg { display: flex; gap: 12px; margin-bottom: 18px; animation: fadeIn 0.3s; }
+.msg.user { flex-direction: row-reverse; }
+
+.avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; flex-shrink: 0;
+}
+.msg.ai .avatar { background: linear-gradient(135deg, var(--gold), #9A6E20); }
+.msg.user .avatar { background: var(--ink3); border: 1px solid var(--border); }
+
+.bubble {
+  max-width: 78%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 1.05rem;
+  line-height: 1.75;
+}
+.msg.ai .bubble { background: var(--ink3); border: 1px solid var(--border); border-radius: 4px 12px 12px 12px; }
+.msg.user .bubble { background: rgba(200,151,58,0.12); border: 1px solid rgba(200,151,58,0.3); border-radius: 12px 4px 12px 12px; color: var(--cream); }
+
+.chat-input-row { display: flex; gap: 10px; }
+.chat-input-row textarea {
+  flex: 1; background: var(--ink3); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px 16px; color: var(--text);
+  font-family: 'EB Garamond', serif; font-size: 1.05rem;
+  resize: none; outline: none; height: 52px; transition: border-color 0.3s;
+}
+.chat-input-row textarea:focus { border-color: var(--gold); }
+.chat-input-row textarea::placeholder { color: var(--muted); }
+.send { width: 52px; height: 52px; border-radius: 10px; font-size: 1.3rem; display: flex; align-items: center; justify-content: center; }
+
+/* Quick chips */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.chip {
+  padding: 6px 14px; background: transparent;
+  border: 1px solid rgba(200,151,58,0.3); border-radius: 20px;
+  color: var(--gold); font-family: 'EB Garamond', serif;
+  font-size: 0.9rem; cursor: pointer; transition: all 0.2s;
+}
+.chip:hover { background: rgba(200,151,58,0.1); border-color: var(--gold); }
+
+/* Modules grid */
+.mod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+.mod-card {
+  background: var(--ink3); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px; cursor: pointer;
+  transition: all 0.3s; position: relative; overflow: hidden;
+}
+.mod-card::after {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+  transform: scaleX(0); transform-origin: left; transition: transform 0.3s;
+}
+.mod-card:hover { border-color: rgba(200,151,58,0.4); transform: translateY(-2px); }
+.mod-card:hover::after { transform: scaleX(1); }
+.mod-card.done { border-color: rgba(26,92,42,0.5); }
+.mod-card .m-icon { font-size: 1.8rem; margin-bottom: 10px; }
+.mod-card h4 { font-family: 'Cinzel', serif; font-size: 0.9rem; color: var(--gold2); margin-bottom: 6px; letter-spacing: 0.5px; }
+.mod-card p { color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
+.mod-card .mod-status { margin-top: 12px; font-size: 0.8rem; color: var(--green); }
+
+/* Books grid */
+.testament-section { margin-bottom: 32px; }
+.testament-title {
+  font-family: 'Cinzel', serif; font-size: 1.1rem; color: var(--gold);
+  letter-spacing: 2px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+}
+.testament-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+.books-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+.book-card {
+  background: var(--ink3); border: 1px solid var(--border);
+  border-radius: 8px; padding: 12px 14px; cursor: pointer;
+  transition: all 0.2s;
+}
+.book-card:hover { border-color: var(--gold); background: rgba(200,151,58,0.08); }
+.book-card h5 { font-family: 'Cinzel', serif; font-size: 0.8rem; color: var(--gold2); margin-bottom: 3px; }
+.book-card p { font-size: 0.78rem; color: var(--muted); line-height: 1.4; }
+
+/* Plan days */
+.plan-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.day-card {
+  background: var(--ink3); border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px; cursor: pointer;
+  transition: all 0.2s;
+}
+.day-card:hover { border-color: var(--gold); }
+.day-card.done { border-color: rgba(26,92,42,0.4); background: rgba(26,92,42,0.05); }
+.day-card.today { border-color: var(--gold); background: rgba(200,151,58,0.08); }
+.day-card .day-num { font-family: 'Cinzel', serif; font-size: 0.75rem; color: var(--muted); margin-bottom: 4px; }
+.day-card .day-title { font-size: 0.95rem; color: var(--text); line-height: 1.4; margin-bottom: 8px; }
+.day-card .day-ref { font-size: 0.8rem; color: var(--gold); font-style: italic; }
+.day-card .day-check { color: var(--green); float: right; }
+
+/* Journal */
+.journal-entries { margin-top: 20px; }
+.journal-entry {
+  background: var(--ink3); border: 1px solid var(--border);
+  border-radius: 10px; padding: 18px; margin-bottom: 12px;
+}
+.journal-entry .j-date { font-size: 0.8rem; color: var(--gold); margin-bottom: 6px; }
+.journal-entry .j-title { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--text); margin-bottom: 8px; }
+.journal-entry .j-text { color: var(--muted); font-style: italic; line-height: 1.7; font-size: 0.95rem; }
+
+/* Stats */
+.stats-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.stat-card {
+  background: var(--ink2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px; text-align: center;
+}
+.stat-card .stat-val { font-family: 'Cinzel', serif; font-size: 2rem; color: var(--gold2); line-height: 1; margin-bottom: 6px; }
+.stat-card .stat-lbl { font-size: 0.8rem; color: var(--muted); letter-spacing: 1px; }
+
+/* Dots loader */
+.dots { display: inline-flex; gap: 4px; align-items: center; }
+.dots span { width: 5px; height: 5px; background: var(--gold); border-radius: 50%; animation: bounce 0.8s infinite; }
+.dots span:nth-child(2) { animation-delay: 0.15s; }
+.dots span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes bounce { 0%,100%{transform:translateY(0);opacity:.4} 50%{transform:translateY(-5px);opacity:1} }
+
+/* Mobile toggle — caché sur desktop */
+.menu-toggle { display: none; }
+
+.overlay {
+  display: none;
+  position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+  z-index: 50;
+}
+
+/* ===== BOTTOM NAV MOBILE ===== */
+.bottom-nav {
+  display: none;
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--ink2);
+  border-top: 1px solid var(--border);
+  z-index: 300;
+  padding: 6px 0 max(6px, env(safe-area-inset-bottom));
+}
+.bottom-nav-inner {
+  display: flex; justify-content: space-around; align-items: center;
+}
+.bnav-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  background: transparent; border: none; cursor: pointer;
+  padding: 6px 10px; border-radius: 10px; min-width: 52px;
+  transition: all 0.2s;
+}
+.bnav-btn .b-icon { font-size: 1.25rem; line-height: 1; }
+.bnav-btn .b-label { font-size: 0.58rem; color: var(--muted); letter-spacing: 0.3px; font-family: 'EB Garamond', serif; white-space: nowrap; }
+.bnav-btn.active .b-label { color: var(--gold); }
+.bnav-btn.active .b-icon { filter: drop-shadow(0 0 5px rgba(200,151,58,0.7)); }
+
+/* More menu */
+.more-menu {
+  display: none;
+  position: fixed; bottom: 65px; left: 0; right: 0;
+  background: var(--ink2); border-top: 1px solid var(--border);
+  z-index: 299; padding: 16px;
+  animation: slideUp 0.25s ease;
+}
+.more-menu.open { display: block; }
+.more-menu-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+}
+.more-item {
+  background: var(--ink3); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 8px;
+  color: var(--text); font-family: 'EB Garamond', serif;
+  font-size: 0.88rem; cursor: pointer; text-align: center;
+  border: none; line-height: 1.4; transition: background 0.2s;
+}
+.more-item:active { background: rgba(200,151,58,0.15); }
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* ===== RESPONSIVE TABLETTE ===== */
+@media (max-width: 1024px) {
+  .sidebar { width: 220px; }
+  .main { margin-left: 220px; }
+  .panel { padding: 32px 28px 60px; }
+}
+
+/* ===== RESPONSIVE MOBILE ===== */
+@media (max-width: 768px) {
+  /* Masquer sidebar, montrer bottom nav */
+  .sidebar { display: none; }
+  .main { margin-left: 0; }
+  .bottom-nav { display: block; }
+  .panel { padding: 20px 16px 90px; }
+
+  /* Grilles adaptées */
+  .mod-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .plan-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .books-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; }
+  .stats-row { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .two-col { grid-template-columns: 1fr; }
+
+  /* Cards compactes */
+  .card { padding: 18px 16px; }
+  .mod-card { padding: 16px 12px; }
+  .day-card { padding: 12px; }
+  .book-card { padding: 10px 12px; }
+  .stat-card { padding: 16px 12px; }
+  .stat-card .stat-val { font-size: 1.6rem; }
+
+  /* Textes */
+  .panel-header h2 { font-size: 1.3rem; }
+  .mod-card h4 { font-size: 0.82rem; }
+  .mod-card p { font-size: 0.82rem; }
+
+  /* Chat */
+  .chat-wrap { height: 320px; }
+  .chat-input-row textarea { font-size: 16px; } /* évite zoom iOS */
+
+  /* Formulaires */
+  .form-group input,
+  .form-group select,
+  .form-group textarea { font-size: 16px; } /* évite zoom iOS */
+
+  /* Boutons touch-friendly */
+  .btn { min-height: 46px; padding: 11px 20px; }
+  .chip { min-height: 38px; }
+
+  /* Testament title */
+  .testament-title { font-size: 0.95rem; }
+}
+
+/* ===== TRÈS PETIT MOBILE ===== */
+@media (max-width: 380px) {
+  .mod-grid { grid-template-columns: 1fr; }
+  .plan-grid { grid-template-columns: 1fr; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .panel { padding: 16px 12px 90px; }
+  .bottom-nav-inner { gap: 0; }
+  .bnav-btn { min-width: 44px; padding: 6px 6px; }
+}
+
+.tag {
+  display: inline-block; padding: 3px 10px; border-radius: 12px;
+  font-size: 0.75rem; margin: 2px;
+}
+.tag-ot { background: rgba(139,26,26,0.2); color: #E88; border: 1px solid rgba(139,26,26,0.3); }
+.tag-nt { background: rgba(26,92,42,0.2); color: #6E6; border: 1px solid rgba(26,92,42,0.3); }
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media(max-width: 640px){ .two-col { grid-template-columns: 1fr; } }
+
+/* Sermon steps */
+.step-indicator {
+  display: flex; gap: 0; margin-bottom: 28px;
+  background: var(--ink3); border-radius: 10px; padding: 6px; overflow-x: auto;
+}
+.step {
+  flex: 1; min-width: 80px; padding: 8px 10px; text-align: center;
+  border-radius: 7px; font-size: 0.8rem; color: var(--muted);
+  cursor: pointer; transition: all 0.2s; white-space: nowrap;
+}
+.step.active { background: rgba(200,151,58,0.15); color: var(--gold2); }
+.step.done { color: var(--green); }
+</style>
+</head>
+<body>
+
+<div class="overlay" id="overlay" onclick="closeMoreMenu()"></div>
+
+<!-- ===== BOTTOM NAVIGATION MOBILE ===== -->
+<nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <button class="bnav-btn active" id="bn-accueil" onclick="goMobile('accueil')">
+      <span class="b-icon">🏠</span><span class="b-label">Accueil</span>
+    </button>
+    <button class="bnav-btn" id="bn-plan" onclick="goMobile('plan')">
+      <span class="b-icon">📅</span><span class="b-label">Plan</span>
+    </button>
+    <button class="bnav-btn" id="bn-mentor" onclick="goMobile('mentor')">
+      <span class="b-icon">✝</span><span class="b-label">Mentor</span>
+    </button>
+    <button class="bnav-btn" id="bn-sermon" onclick="goMobile('sermon')">
+      <span class="b-icon">📜</span><span class="b-label">Sermon</span>
+    </button>
+    <button class="bnav-btn" id="bn-more" onclick="toggleMoreMenu()">
+      <span class="b-icon">☰</span><span class="b-label">Plus</span>
+    </button>
+  </div>
+</nav>
+
+<!-- More menu -->
+<div class="more-menu" id="more-menu">
+  <div class="more-menu-grid">
+    <button class="more-item" onclick="goMobile('bible66')">📖<br>66 livres</button>
+    <button class="more-item" onclick="goMobile('modules')">🎓<br>Modules</button>
+    <button class="more-item" onclick="goMobile('interpretation')">🔍<br>Interpréter</button>
+    <button class="more-item" onclick="goMobile('exercices')">🎤<br>Exercices</button>
+    <button class="more-item" onclick="goMobile('quiz')">✅<br>Quiz</button>
+    <button class="more-item" onclick="goMobile('journal')">📓<br>Journal</button>
+    <button class="more-item" onclick="goMobile('progres')">📊<br>Progrès</button>
+  </div>
+</div>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <span class="cross">✝</span>
+    <h1>ÉCOLE DU<br>PRÉDICATEUR</h1>
+    <p>Formation complète</p>
+    <p style="margin-top:8px; font-size:0.68rem; color:var(--gold); letter-spacing:0.5px; line-height:1.5;">Créé par<br><strong style="font-family:'Cinzel',serif; font-size:0.72rem;">Frère Davi Meonsi NGOBO</strong></p>
+  </div>
+
+  <div class="sidebar-progress-wrap">
+    <div class="label">Progression <span id="pct-label">0%</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="global-progress" style="width:0%"></div></div>
+  </div>
+
+  <nav class="nav">
+    <div class="nav-section">Tableau de bord</div>
+    <button class="nav-btn active" onclick="go('accueil')"><span class="icon">🏠</span> Accueil</button>
+
+    <div class="nav-section">Formation</div>
+    <button class="nav-btn" onclick="go('plan')"><span class="icon">📅</span> Plan 30 jours</button>
+    <button class="nav-btn" onclick="go('bible66')"><span class="icon">📖</span> Les 66 livres</button>
+    <button class="nav-btn" onclick="go('modules')"><span class="icon">🎓</span> Modules théologie</button>
+    <button class="nav-btn" onclick="go('interpretation')"><span class="icon">🔍</span> Interpréter la Bible</button>
+
+    <div class="nav-section">Prédication</div>
+    <button class="nav-btn" onclick="go('sermon')"><span class="icon">📜</span> Construire un sermon</button>
+    <button class="nav-btn" onclick="go('exercices')"><span class="icon">🎤</span> Exercices pratiques</button>
+
+    <div class="nav-section">IA & Outils</div>
+    <button class="nav-btn" onclick="go('mentor')"><span class="icon">✝</span> Mentor IA</button>
+    <button class="nav-btn" onclick="go('quiz')"><span class="icon">✅</span> Quiz biblique</button>
+
+    <div class="nav-section">Suivi</div>
+    <button class="nav-btn" onclick="go('journal')"><span class="icon">📓</span> Mon journal</button>
+    <button class="nav-btn" onclick="go('progres')"><span class="icon">📊</span> Mes progrès</button>
+  </nav>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+<!-- ========== ACCUEIL ========== -->
+<div id="p-accueil" class="panel active">
+  <div class="panel-header">
+    <h2>✝ Bienvenue dans ta formation</h2>
+    <p>Tout ce dont tu as besoin pour connaître la Bible et apprendre à prêcher</p>
+    <p style="margin-top:10px; font-size:0.85rem; color:var(--gold); font-style:normal;">✦ Créé par le <strong>Frère Davi Meonsi NGOBO</strong></p>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-val" id="s-jours">0</div><div class="stat-lbl">Jours complétés</div></div>
+    <div class="stat-card"><div class="stat-val" id="s-modules">0</div><div class="stat-lbl">Modules terminés</div></div>
+    <div class="stat-card"><div class="stat-val" id="s-sermons">0</div><div class="stat-lbl">Sermons préparés</div></div>
+    <div class="stat-card"><div class="stat-val" id="s-quiz">0</div><div class="stat-lbl">Quiz réussis</div></div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <h3>📅 Continuer le plan</h3>
+      <div id="today-plan-preview">
+        <div class="verse-block">Chargement du programme du jour...</div>
+      </div>
+      <button class="btn btn-gold" style="margin-top:14px" onclick="go('plan')">Voir mon plan →</button>
+    </div>
+    <div class="card">
+      <h3>✦ Verset du jour</h3>
+      <div class="verse-block" id="verset-jour">
+        « Car la Parole de Dieu est vivante et efficace… »
+        <span class="verse-ref">Hébreux 4:12</span>
+      </div>
+      <button class="btn btn-outline" style="margin-top:14px" onclick="loadVersetJour()">Nouveau verset 🔄</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🗺 Ton parcours de formation</h3>
+    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px; margin-top:8px;">
+      <div onclick="go('bible66')" style="cursor:pointer; padding:16px; background:var(--ink3); border-radius:10px; border:1px solid var(--border); transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="font-size:1.5rem; margin-bottom:8px;">📖</div>
+        <div style="font-family:Cinzel,serif;font-size:0.85rem;color:var(--gold2);margin-bottom:4px;">Les 66 livres</div>
+        <div style="font-size:0.85rem;color:var(--muted);">Connais chaque livre de la Bible</div>
+      </div>
+      <div onclick="go('modules')" style="cursor:pointer; padding:16px; background:var(--ink3); border-radius:10px; border:1px solid var(--border); transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="font-size:1.5rem; margin-bottom:8px;">🎓</div>
+        <div style="font-family:Cinzel,serif;font-size:0.85rem;color:var(--gold2);margin-bottom:4px;">Théologie</div>
+        <div style="font-size:0.85rem;color:var(--muted);">10 modules fondamentaux</div>
+      </div>
+      <div onclick="go('sermon')" style="cursor:pointer; padding:16px; background:var(--ink3); border-radius:10px; border:1px solid var(--border); transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="font-size:1.5rem; margin-bottom:8px;">📜</div>
+        <div style="font-family:Cinzel,serif;font-size:0.85rem;color:var(--gold2);margin-bottom:4px;">Construire un sermon</div>
+        <div style="font-size:0.85rem;color:var(--muted);">Structure, plan, préparation</div>
+      </div>
+      <div onclick="go('exercices')" style="cursor:pointer; padding:16px; background:var(--ink3); border-radius:10px; border:1px solid var(--border); transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="font-size:1.5rem; margin-bottom:8px;">🎤</div>
+        <div style="font-family:Cinzel,serif;font-size:0.85rem;color:var(--gold2);margin-bottom:4px;">Exercices pratiques</div>
+        <div style="font-size:0.85rem;color:var(--muted);">S'entraîner à prêcher</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PLAN 30 JOURS ========== -->
+<div id="p-plan" class="panel">
+  <div class="panel-header">
+    <h2>📅 Plan d'étude — 30 Jours</h2>
+    <p>Un programme progressif pour passer de débutant à prédicateur formé</p>
+  </div>
+  <div class="plan-grid" id="plan-grid"></div>
+</div>
+
+<!-- ========== 66 LIVRES ========== -->
+<div id="p-bible66" class="panel">
+  <div class="panel-header">
+    <h2>📖 Les 66 Livres de la Bible</h2>
+    <p>Clique sur un livre pour recevoir une présentation complète par l'IA</p>
+  </div>
+
+  <div class="testament-section">
+    <div class="testament-title">Ancien Testament — 39 livres</div>
+    <div class="books-grid" id="ot-books"></div>
+  </div>
+
+  <div class="testament-section">
+    <div class="testament-title">Nouveau Testament — 27 livres</div>
+    <div class="books-grid" id="nt-books"></div>
+  </div>
+
+  <div class="result" id="book-result"></div>
+</div>
+
+<!-- ========== MODULES ========== -->
+<div id="p-modules" class="panel">
+  <div class="panel-header">
+    <h2>🎓 Modules de Théologie</h2>
+    <p>10 modules fondamentaux pour tout prédicateur — clique pour étudier</p>
+  </div>
+  <div class="mod-grid" id="mod-grid"></div>
+  <div class="result" id="mod-result"></div>
+</div>
+
+<!-- ========== INTERPRÉTATION ========== -->
+<div id="p-interpretation" class="panel">
+  <div class="panel-header">
+    <h2>🔍 Interpréter la Bible</h2>
+    <p>Apprends les règles d'herméneutique pour lire et comprendre correctement la Parole</p>
+  </div>
+
+  <div class="card">
+    <h3>📌 Les 7 règles d'or de l'interprétation biblique</h3>
+    <div id="hermeneutique-content">
+      <div style="color:var(--muted);font-style:italic;">Cliquez sur "Charger les règles" pour commencer</div>
+    </div>
+    <button class="btn btn-gold" style="margin-top:16px" onclick="loadHermeneutique()">📚 Charger les règles</button>
+  </div>
+
+  <div class="card">
+    <h3>🧪 Analyser un texte biblique</h3>
+    <div class="form-group">
+      <label>Texte à analyser</label>
+      <input type="text" id="interp-text" placeholder="Ex: Jean 3:16 / Matthieu 5:3-12 / Romains 8:28" />
+    </div>
+    <button class="btn btn-gold" onclick="interpreterTexte()">🔍 Analyser ce texte</button>
+    <div class="result" id="interp-result"></div>
+  </div>
+</div>
+
+<!-- ========== SERMON ========== -->
+<div id="p-sermon" class="panel">
+  <div class="panel-header">
+    <h2>📜 Construire un Sermon</h2>
+    <p>Un outil guidé étape par étape pour préparer un sermon solide et impactant</p>
+  </div>
+
+  <div class="step-indicator">
+    <div class="step active" id="stp1">1. Texte</div>
+    <div class="step" id="stp2">2. Structure</div>
+    <div class="step" id="stp3">3. Contenu</div>
+    <div class="step" id="stp4">4. Sermon complet</div>
+  </div>
+
+  <div class="card">
+    <div class="two-col">
+      <div class="form-group">
+        <label>📖 Texte biblique</label>
+        <input type="text" id="s-verse" placeholder="Ex: Romains 8:28-39" />
+      </div>
+      <div class="form-group">
+        <label>🎯 Thème / Message</label>
+        <input type="text" id="s-theme" placeholder="Ex: L'espérance dans l'épreuve" />
+      </div>
+      <div class="form-group">
+        <label>👥 Public</label>
+        <select id="s-audience">
+          <option>Assemblée générale</option>
+          <option>Jeunesse</option>
+          <option>Nouveaux croyants</option>
+          <option>Leaders & anciens</option>
+          <option>Non-croyants (évangélisation)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>⏱ Durée</label>
+        <select id="s-dur">
+          <option>20 minutes</option>
+          <option selected>30 minutes</option>
+          <option>45 minutes</option>
+          <option>1 heure</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>💡 Contexte (optionnel)</label>
+      <textarea id="s-ctx" placeholder="Contexte particulier, fête chrétienne, situation de la communauté..."></textarea>
+    </div>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <button class="btn btn-gold" id="sermon-btn" onclick="genSermon()">✨ Générer le sermon complet</button>
+      <button class="btn btn-outline" onclick="genPlan()">📋 Plan uniquement</button>
+    </div>
+
+    <div class="result" id="sermon-result"></div>
+  </div>
+</div>
+
+<!-- ========== EXERCICES ========== -->
+<div id="p-exercices" class="panel">
+  <div class="panel-header">
+    <h2>🎤 Exercices pratiques de Prédication</h2>
+    <p>Entraîne-toi concrètement avant de monter en chaire</p>
+  </div>
+
+  <div class="mod-grid">
+    <div class="mod-card" onclick="loadExo('introduction')">
+      <div class="m-icon">🎯</div>
+      <h4>Exercice 1 : Capter l'attention</h4>
+      <p>Apprends à ouvrir un sermon pour accrocher immédiatement l'assemblée</p>
+    </div>
+    <div class="mod-card" onclick="loadExo('voix')">
+      <div class="m-icon">🗣</div>
+      <h4>Exercice 2 : La voix et le débit</h4>
+      <p>Maîtrise la projection, les pauses, l'intonation et le rythme</p>
+    </div>
+    <div class="mod-card" onclick="loadExo('illustration')">
+      <div class="m-icon">💡</div>
+      <h4>Exercice 3 : Illustrer ses points</h4>
+      <p>Trouve des illustrations percutantes pour rendre ton message vivant</p>
+    </div>
+    <div class="mod-card" onclick="loadExo('appel')">
+      <div class="m-icon">🔥</div>
+      <h4>Exercice 4 : L'appel final</h4>
+      <p>Comment terminer un sermon avec un appel à l'action inoubliable</p>
+    </div>
+    <div class="mod-card" onclick="loadExo('nerveux')">
+      <div class="m-icon">💪</div>
+      <h4>Exercice 5 : Gérer le trac</h4>
+      <p>Techniques spirituelles et pratiques pour surmonter la peur de prêcher</p>
+    </div>
+    <div class="mod-card" onclick="loadExo('texte')">
+      <div class="m-icon">📖</div>
+      <h4>Exercice 6 : Lire la Bible en public</h4>
+      <p>Lire avec émotion, clarté et respect — faire vivre la Parole</p>
+    </div>
+    <div class="mod-card" onclick="loadExo('memoire')">
+      <div class="m-icon">🧠</div>
+      <h4>Exercice 7 : Mémoriser les versets</h4>
+      <p>Techniques de mémorisation pour citer la Bible naturellement</p>
+    </div>
+    <div class="mod-card" onclick="loadExo('mini-sermon')">
+      <div class="m-icon">⏱</div>
+      <h4>Exercice 8 : Prêcher en 3 minutes</h4>
+      <p>L'exercice essentiel : un message court, complet, puissant</p>
+    </div>
+  </div>
+
+  <div class="result" id="exo-result"></div>
+</div>
+
+<!-- ========== MENTOR IA ========== -->
+<div id="p-mentor" class="panel">
+  <div class="panel-header">
+    <h2>✝ Mentor Biblique IA</h2>
+    <p>Pose n'importe quelle question sur la Bible, la théologie ou la prédication</p>
+  </div>
+
+  <div class="card" style="padding-bottom:24px;">
+    <div class="chips">
+      <button class="chip" onclick="qk('Comment construire un plan de sermon en 3 points ?')">Structure d'un sermon</button>
+      <button class="chip" onclick="qk('Explique la différence entre l\'Ancien et le Nouveau Testament')">AT vs NT</button>
+      <button class="chip" onclick="qk('Comment interpréter une parabole de Jésus ?')">Interpréter une parabole</button>
+      <button class="chip" onclick="qk('Quels versets sur la foi dois-je absolument connaître ?')">Versets sur la foi</button>
+      <button class="chip" onclick="qk('Comment prier avant de prêcher ?')">Prier avant de prêcher</button>
+      <button class="chip" onclick="qk('Quelle est la différence entre évangélisation et prédication ?')">Évangélisation vs Prédication</button>
+    </div>
+
+    <div class="chat-wrap" id="chat-box">
+      <div class="msg ai">
+        <div class="avatar">✝</div>
+        <div class="bubble">
+          Que la paix de Dieu soit avec toi, frère ! Je suis ton mentor biblique. Je suis ici pour t'accompagner dans ta formation pour prêcher la Parole. Pose-moi n'importe quelle question sur la Bible, la théologie, les sermons, ou la vie de prédicateur. Je suis là pour toi. 🙏
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-input-row">
+      <textarea id="chat-in" placeholder="Ex: Comment expliquer la Trinité à des nouveaux croyants ?"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();chat()}"></textarea>
+      <button class="btn btn-gold send" id="send-btn" onclick="chat()">→</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== QUIZ ========== -->
+<div id="p-quiz" class="panel">
+  <div class="panel-header">
+    <h2>✅ Quiz Biblique</h2>
+    <p>Teste tes connaissances et consolide ta formation</p>
+  </div>
+
+  <div class="card">
+    <div class="two-col">
+      <div class="form-group">
+        <label>Catégorie</label>
+        <select id="q-cat">
+          <option>Ancien Testament — Pentateuque</option>
+          <option>Ancien Testament — Prophètes</option>
+          <option>Ancien Testament — Poètes & Sagesse</option>
+          <option>Nouveau Testament — Évangiles</option>
+          <option>Vie et enseignements de Jésus</option>
+          <option>Épîtres de Paul</option>
+          <option>Actes des Apôtres</option>
+          <option>Théologie fondamentale</option>
+          <option>Homilétique (art de prêcher)</option>
+          <option>Personnages bibliques</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Niveau</label>
+        <select id="q-lvl">
+          <option>Débutant</option>
+          <option>Intermédiaire</option>
+          <option>Avancé</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-gold" id="quiz-btn" onclick="runQuiz()">🎲 Générer 5 questions</button>
+    <div class="result" id="quiz-result"></div>
+  </div>
+</div>
+
+<!-- ========== JOURNAL ========== -->
+<div id="p-journal" class="panel">
+  <div class="panel-header">
+    <h2>📓 Mon Journal Spirituel</h2>
+    <p>Note tes révélations, tes sermons préparés, et ton chemin de formation</p>
+  </div>
+
+  <div class="card">
+    <h3>✍ Nouvelle entrée</h3>
+    <div class="form-group">
+      <label>Titre</label>
+      <input type="text" id="j-title" placeholder="Ex: Ce que j'ai appris sur la grâce..." />
+    </div>
+    <div class="form-group">
+      <label>Texte biblique du jour</label>
+      <input type="text" id="j-verse" placeholder="Ex: Éphésiens 2:8-9" />
+    </div>
+    <div class="form-group">
+      <label>Mes réflexions</label>
+      <textarea id="j-text" placeholder="Écris ici ce que Dieu t'a dit, ce que tu as appris, ou les idées pour ton sermon..." style="min-height:130px;"></textarea>
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <button class="btn btn-gold" onclick="saveJournal()">💾 Enregistrer</button>
+      <button class="btn btn-outline" onclick="aiInsight()">✨ Demander une réflexion à l'IA</button>
+    </div>
+    <div class="result" id="j-insight"></div>
+  </div>
+
+  <div class="journal-entries" id="journal-list">
+    <div style="color:var(--muted); font-style:italic; padding:20px 0;">Tes entrées de journal apparaîtront ici...</div>
+  </div>
+</div>
+
+<!-- ========== PROGRÈS ========== -->
+<div id="p-progres" class="panel">
+  <div class="panel-header">
+    <h2>📊 Mes Progrès</h2>
+    <p>Ton évolution dans la formation</p>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-val" id="p-jours">0</div><div class="stat-lbl">Jours complétés</div></div>
+    <div class="stat-card"><div class="stat-val" id="p-modules">0</div><div class="stat-lbl">Modules terminés</div></div>
+    <div class="stat-card"><div class="stat-val" id="p-sermons">0</div><div class="stat-lbl">Sermons générés</div></div>
+    <div class="stat-card"><div class="stat-val" id="p-quiz">0</div><div class="stat-lbl">Quiz complétés</div></div>
+    <div class="stat-card"><div class="stat-val" id="p-livres">0</div><div class="stat-lbl">Livres étudiés</div></div>
+    <div class="stat-card"><div class="stat-val" id="p-notes">0</div><div class="stat-lbl">Notes de journal</div></div>
+  </div>
+
+  <div class="card">
+    <h3>🏆 Badges obtenus</h3>
+    <div id="badges-area" style="display:flex;flex-wrap:wrap;gap:12px;margin-top:8px;">
+      <div style="color:var(--muted);font-style:italic;">Continue ta formation pour débloquer des badges !</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📋 Ce qu'il te reste à compléter</h3>
+    <div id="todo-area" style="line-height:2;color:var(--muted);"></div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<!-- Footer crédit -->
+<div style="text-align:center; padding: 24px 16px 100px; color:var(--muted); font-size:0.82rem; font-style:italic; position:relative; z-index:1;">
+  <span style="color:var(--gold);">✝</span> École du Prédicateur — Créé avec foi par le <strong style="color:var(--gold2); font-style:normal;">Frère Davi Meonsi NGOBO</strong>
+  <br><span style="font-size:0.75rem; letter-spacing:1px;">« Prêche la Parole » — 2 Timothée 4:2</span>
+</div>
+
+<script>
+// ===================== STATE =====================
+const STATE = {
+  jours: [],
+  modules: [],
+  sermons: 0,
+  quizzes: 0,
+  livres: new Set(),
+  journal: [],
+  chatHistory: []
+};
+
+function saveState() {
+  try {
+    const s = {...STATE, livres: [...STATE.livres]};
+    localStorage.setItem('ecolePred', JSON.stringify(s));
+  } catch(e){}
+}
+
+function loadState() {
+  try {
+    const s = JSON.parse(localStorage.getItem('ecolePred') || '{}');
+    if (s.jours) STATE.jours = s.jours;
+    if (s.modules) STATE.modules = s.modules;
+    if (s.sermons) STATE.sermons = s.sermons;
+    if (s.quizzes) STATE.quizzes = s.quizzes;
+    if (s.livres) STATE.livres = new Set(s.livres);
+    if (s.journal) STATE.journal = s.journal;
+  } catch(e){}
+}
+
+// ===================== API =====================
+async function askClaude(messages, system) {
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1000,
+      system: system || "Tu es un mentor biblique expert, pasteur et théologien évangélique expérimenté. Tu réponds UNIQUEMENT en français. Tu es pédagogue, encourageant et profondément biblique. Tu cites régulièrement des versets précis. Tu aides l'utilisateur à se former pour prêcher l'Évangile.",
+      messages: Array.isArray(messages) ? messages : [{ role: "user", content: messages }]
+    })
+  });
+  const d = await res.json();
+  return d.content?.[0]?.text || "Erreur de connexion. Réessaie.";
+}
+
+// ===================== NAV =====================
+function go(page) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('p-' + page).classList.add('active');
+  const btns = document.querySelectorAll('.nav-btn');
+  btns.forEach(b => { if (b.textContent.toLowerCase().includes(page) || b.getAttribute('onclick')?.includes(page)) b.classList.add('active'); });
+  if (window.innerWidth < 768) closeMoreMenu();
+  updateStats();
+}
+
+function toggleMoreMenu() {
+  const m = document.getElementById('more-menu');
+  const ov = document.getElementById('overlay');
+  const isOpen = m.classList.contains('open');
+  if (isOpen) {
+    m.classList.remove('open');
+    ov.style.display = 'none';
+  } else {
+    m.classList.add('open');
+    ov.style.display = 'block';
+  }
+}
+
+function closeMoreMenu() {
+  document.getElementById('more-menu').classList.remove('open');
+  document.getElementById('overlay').style.display = 'none';
+}
+
+function goMobile(page) {
+  go(page);
+  // Update bottom nav
+  document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('bn-' + page);
+  if (btn) btn.classList.add('active');
+  // Close more menu
+  closeMoreMenu();
+  // Scroll top
+  window.scrollTo(0, 0);
+}
+
+// ===================== STATS =====================
+function updateStats() {
+  const j = STATE.jours.length;
+  const m = STATE.modules.length;
+  const s = STATE.sermons;
+  const q = STATE.quizzes;
+  const l = STATE.livres.size;
+  const n = STATE.journal.length;
+  const total = j + m*2 + s*3 + q + l + n;
+  const max = 30 + 10*2 + 10*3 + 20 + 10 + 5;
+  const pct = Math.min(100, Math.round(total / max * 100));
+
+  document.getElementById('global-progress').style.width = pct + '%';
+  document.getElementById('pct-label').textContent = pct + '%';
+  ['s-jours','p-jours'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = j; });
+  ['s-modules','p-modules'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = m; });
+  ['s-sermons','p-sermons'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = s; });
+  ['s-quiz','p-quiz'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = q; });
+  if(document.getElementById('p-livres')) document.getElementById('p-livres').textContent = l;
+  if(document.getElementById('p-notes')) document.getElementById('p-notes').textContent = n;
+  updateBadges();
+  saveState();
+}
+
+function updateBadges() {
+  const b = document.getElementById('badges-area');
+  if (!b) return;
+  const badges = [];
+  if (STATE.jours.length >= 1) badges.push('🌱 Premier jour');
+  if (STATE.jours.length >= 7) badges.push('📅 Une semaine');
+  if (STATE.jours.length >= 30) badges.push('🏆 30 jours accomplis');
+  if (STATE.modules.length >= 1) badges.push('🎓 Premier module');
+  if (STATE.modules.length >= 5) badges.push('📚 Mi-chemin théologie');
+  if (STATE.modules.length >= 10) badges.push('👑 Théologien formé');
+  if (STATE.sermons >= 1) badges.push('📜 Premier sermon');
+  if (STATE.sermons >= 5) badges.push('🎤 Prédicateur en formation');
+  if (STATE.livres.size >= 10) badges.push('📖 Explorateur biblique');
+  if (STATE.livres.size >= 66) badges.push('✝ Maître de la Bible');
+  if (badges.length === 0) {
+    b.innerHTML = '<div style="color:var(--muted);font-style:italic;">Continue ta formation pour débloquer des badges !</div>';
+  } else {
+    b.innerHTML = badges.map(bg => `<span style="background:rgba(200,151,58,0.15);border:1px solid rgba(200,151,58,0.3);border-radius:20px;padding:6px 14px;font-size:0.9rem;color:var(--gold2);">${bg}</span>`).join('');
+  }
+  const todo = document.getElementById('todo-area');
+  if (todo) {
+    const items = [];
+    if (STATE.jours.length < 30) items.push(`📅 ${30 - STATE.jours.length} jours restants dans le plan`);
+    if (STATE.modules.length < 10) items.push(`🎓 ${10 - STATE.modules.length} modules de théologie restants`);
+    if (STATE.sermons < 5) items.push(`📜 Prépare encore ${5 - STATE.sermons} sermons`);
+    if (STATE.livres.size < 66) items.push(`📖 ${66 - STATE.livres.size} livres de la Bible à explorer`);
+    todo.innerHTML = items.map(i => `<div style="color:var(--text)">${i}</div>`).join('') || '<div style="color:var(--green)">🎉 Excellent travail ! Tu progresses bien !</div>';
+  }
+}
+
+// ===================== PLAN 30 JOURS =====================
+const PLAN = [
+  ["Jour 1","Introduction à la Bible","Qu'est-ce que la Bible ?","2 Tim 3:16-17"],
+  ["Jour 2","L'Ancien Testament","Structure et importance de l'AT","Ps 119:105"],
+  ["Jour 3","Le Nouveau Testament","Structure et importance du NT","Jean 5:39"],
+  ["Jour 4","La Création","Genèse 1-2 : origine du monde et de l'homme","Gn 1:1"],
+  ["Jour 5","La chute et le péché","Comprendre le péché originel","Rm 3:23"],
+  ["Jour 6","Les promesses de Dieu","L'alliance avec Abraham, Moïse, David","Gn 12:1-3"],
+  ["Jour 7","Les Prophètes","Leur rôle et leurs messages clés","Am 3:7"],
+  ["Jour 8","La naissance de Jésus","L'Incarnation — Dieu fait homme","Lc 1:35"],
+  ["Jour 9","Les miracles de Jésus","Pourquoi Jésus a-t-il fait des miracles ?","Jean 2:11"],
+  ["Jour 10","Les paraboles","Lire et interpréter les paraboles","Mc 4:2"],
+  ["Jour 11","La mort de Jésus","La croix, la rédemption, la substitution","1 Pi 2:24"],
+  ["Jour 12","La résurrection","Fondement de la foi chrétienne","1 Co 15:17"],
+  ["Jour 13","La foi et la grâce","Justification par la foi seule","Ép 2:8-9"],
+  ["Jour 14","Le Saint-Esprit","Sa personne, son œuvre, ses dons","Ac 2:4"],
+  ["Jour 15","La prière","Comment prier efficacement","Mt 6:9-13"],
+  ["Jour 16","L'Église","Son rôle, sa mission, ses ministères","Mt 16:18"],
+  ["Jour 17","L'évangélisation","La Grande Commission","Mt 28:19-20"],
+  ["Jour 18","Homilétique 1","Qu'est-ce qu'un sermon ? Les types de sermons","2 Tim 4:2"],
+  ["Jour 19","Homilétique 2","Trouver son texte et son message","Né 8:8"],
+  ["Jour 20","Homilétique 3","L'introduction et la conclusion","Ec 12:10"],
+  ["Jour 21","Homilétique 4","Les 3 points et les transitions","1 Co 14:40"],
+  ["Jour 22","Homilétique 5","Les illustrations et les exemples","Mc 12:37"],
+  ["Jour 23","L'appel à la décision","Comment inviter au salut","Rm 10:9"],
+  ["Jour 24","La vie du prédicateur","Caractère, discipline, intégrité","1 Tm 3:1-7"],
+  ["Jour 25","Les Psaumes","Adoration, lamentation, confiance","Ps 23:1"],
+  ["Jour 26","Proverbes et sagesse","La sagesse pratique de l'AT","Pr 1:7"],
+  ["Jour 27","Les Épîtres","Paul, Jacques, Pierre, Jean — messages clés","Rm 1:16"],
+  ["Jour 28","L'eschatologie","La fin des temps, le retour de Christ","1 Th 4:16"],
+  ["Jour 29","Révision générale","Consolide tout ce que tu as appris","He 12:1"],
+  ["Jour 30","Ta première prédication","Prépare et délivre ton premier message","Ac 1:8"],
+];
+
+function renderPlan() {
+  const g = document.getElementById('plan-grid');
+  g.innerHTML = PLAN.map((d, i) => {
+    const done = STATE.jours.includes(i);
+    const isToday = !done && !STATE.jours.includes(i+1) && (i === STATE.jours.length);
+    return `<div class="day-card${done?' done':''}${isToday?' today':''}" onclick="studyDay(${i})">
+      <div class="day-num">${d[0]}${done?' <span class="day-check">✓</span>':''}</div>
+      <div class="day-title">${d[1]}</div>
+      <div style="font-size:0.8rem;color:var(--muted);margin-bottom:4px;">${d[2]}</div>
+      <div class="day-ref">${d[3]}</div>
+    </div>`;
+  }).join('');
+}
+
+async function studyDay(i) {
+  const d = PLAN[i];
+  // Show modal-like overlay
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;';
+  overlay.innerHTML = `<div style="background:var(--ink2);border:1px solid var(--border);border-radius:16px;max-width:700px;width:100%;padding:32px;max-height:90vh;overflow-y:auto;">
+    <div style="font-family:Cinzel,serif;font-size:1.3rem;color:var(--gold2);margin-bottom:6px;">${d[0]} — ${d[1]}</div>
+    <div style="color:var(--gold);font-size:0.9rem;margin-bottom:20px;">${d[3]}</div>
+    <div id="day-content" style="line-height:1.9;color:var(--text);">
+      <div style="color:var(--muted);font-style:italic;"><div class="dots"><span></span><span></span><span></span></div> Chargement de l'enseignement...</div>
+    </div>
+    <div style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap;">
+      <button class="btn btn-gold" onclick="markDone(${i},this.closest('div').parentElement.parentElement)">✓ Marquer comme terminé</button>
+      <button class="btn btn-outline" onclick="this.closest('[style*=fixed]').remove()">Fermer</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+
+  const content = overlay.querySelector('#day-content');
+  try {
+    const reply = await askClaude(`Donne-moi un enseignement complet pour le jour de formation : "${d[1]}" (thème: ${d[2]}, verset clé: ${d[3]}).
+Inclus:
+1. Introduction et importance du sujet
+2. Enseignement principal avec 3-4 points clés et versets bibliques
+3. Application pratique pour un futur prédicateur
+4. Verset à mémoriser
+5. Exercice ou question de réflexion pour ce jour
+
+Sois inspirant, clair et pratique.`);
+    content.innerHTML = reply.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong style="color:var(--gold2)">$1</strong>');
+  } catch(e) {
+    content.textContent = 'Erreur de connexion.';
+  }
+}
+
+function markDone(i, overlayEl) {
+  if (!STATE.jours.includes(i)) {
+    STATE.jours.push(i);
+    updateStats();
+    renderPlan();
+  }
+  overlayEl.remove();
+}
+
+// ===================== 66 LIVRES =====================
+const OT = [
+  ["Genèse","Création, chute, patriarches"],["Exode","Libération d'Égypte, la Loi"],["Lévitique","Sacrifices et sainteté"],
+  ["Nombres","40 ans dans le désert"],["Deutéronome","Rappel de la Loi"],["Josué","Conquête de Canaan"],
+  ["Juges","Cycles de désobéissance"],["Ruth","Fidélité et rédemption"],["1 Samuel","Saul et David"],
+  ["2 Samuel","Le règne de David"],["1 Rois","Salomon, division du royaume"],["2 Rois","Chute d'Israël et Juda"],
+  ["1 Chroniques","Histoire de David"],["2 Chroniques","Histoire de Salomon"],["Esdras","Retour d'exil"],
+  ["Néhémie","Reconstruction de Jérusalem"],["Esther","Délivrance du peuple"],["Job","La souffrance et Dieu"],
+  ["Psaumes","Poésie, prière, adoration"],["Proverbes","Sagesse pratique"],["Ecclésiaste","Sens de la vie"],
+  ["Cantique","L'amour, type de Christ"],["Ésaïe","Messie annoncé"],["Jérémie","Prophète des pleurs"],
+  ["Lamentations","Deuil de Jérusalem"],["Ézéchiel","Visions et jugement"],["Daniel","Foi sous l'empire"],
+  ["Osée","Amour d'un Dieu trahi"],["Joël","Le Jour du Seigneur"],["Amos","Justice sociale"],
+  ["Abdias","Jugement d'Édom"],["Jonas","Grâce pour les nations"],["Michée","Justice et miséricorde"],
+  ["Nahum","Chute de Ninive"],["Habacuc","Le juste vivra par la foi"],["Sophonie","Jugement et salut"],
+  ["Aggée","Reconstruire le temple"],["Zacharie","Visions messianiques"],["Malachie","Appel au retour"]
+];
+const NT = [
+  ["Matthieu","L'Évangile du Roi"],["Marc","L'Évangile du Serviteur"],["Luc","L'Évangile de l'Homme"],
+  ["Jean","L'Évangile du Fils de Dieu"],["Actes","Naissance de l'Église"],["Romains","Le salut par la foi"],
+  ["1 Corinthiens","Problèmes de l'Église"],["2 Corinthiens","Le ministère souffrant"],["Galates","La liberté en Christ"],
+  ["Éphésiens","L'Église corps du Christ"],["Philippiens","La joie en toutes choses"],["Colossiens","La supériorité du Christ"],
+  ["1 Thessaloniciens","Le retour de Christ"],["2 Thessaloniciens","Avant le retour"],["1 Timothée","Directives pour l'Église"],
+  ["2 Timothée","Lettres d'un père spirituel"],["Tite","L'organisation des Églises"],["Philémon","Le pardon et la réconciliation"],
+  ["Hébreux","Supériorité de la nouvelle alliance"],["Jacques","La foi en actes"],["1 Pierre","Espoir dans la souffrance"],
+  ["2 Pierre","Faux prophètes et persévérance"],["1 Jean","Dieu est amour"],["2 Jean","Marcher dans la vérité"],
+  ["3 Jean","L'hospitalité chrétienne"],["Jude","Défendre la foi"],["Apocalypse","La victoire finale de Christ"]
+];
+
+function renderBooks() {
+  document.getElementById('ot-books').innerHTML = OT.map((b,i) =>
+    `<div class="book-card" onclick="studyBook('${b[0]}','ot')">
+      <h5>${b[0]}</h5><p>${b[1]}</p>
+    </div>`).join('');
+  document.getElementById('nt-books').innerHTML = NT.map((b,i) =>
+    `<div class="book-card" onclick="studyBook('${b[0]}','nt')">
+      <h5>${b[0]}</h5><p>${b[1]}</p>
+    </div>`).join('');
+}
+
+async function studyBook(name, testament) {
+  STATE.livres.add(name);
+  updateStats();
+  const r = document.getElementById('book-result');
+  r.textContent = '⏳ Chargement...';
+  r.classList.add('show');
+  r.scrollIntoView({ behavior: 'smooth' });
+  try {
+    const reply = await askClaude(`Présente-moi le livre de ${name} (${testament === 'ot' ? 'Ancien' : 'Nouveau'} Testament) pour un futur prédicateur.
+Inclus:
+- Auteur, date et contexte historique
+- Thème central et message principal
+- Structure du livre (grandes parties)
+- 5 versets clés à mémoriser
+- Ce que tout prédicateur doit savoir sur ce livre
+- Connexion avec l'Évangile de Jésus-Christ
+Sois précis et inspirant.`);
+    r.innerHTML = `<strong style="font-family:Cinzel,serif;color:var(--gold2);font-size:1.2rem;">📖 ${name}</strong>\n\n` + reply.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong style="color:var(--gold2)">$1</strong>');
+  } catch(e) { r.textContent = 'Erreur. Réessaie.'; }
+}
+
+// ===================== MODULES =====================
+const MODULES = [
+  {icon:"✝",t:"La Trinité",d:"Père, Fils, Saint-Esprit — un seul Dieu en trois personnes"},
+  {icon:"📖",t:"La Bible : autorité & inspiration",d:"Comment la Bible est-elle la Parole de Dieu ?"},
+  {icon:"🌿",t:"La création et l'homme",d:"Imago Dei, âme, corps, chute originelle"},
+  {icon:"🩸",t:"Le péché et la rédemption",d:"Comprendre le péché, son prix et sa solution"},
+  {icon:"✨",t:"La grâce et le salut",d:"Justification, sanctification, glorification"},
+  {icon:"🕊",t:"Le Saint-Esprit",d:"Sa personne, ses dons, son œuvre dans le croyant"},
+  {icon:"🏛",t:"L'Église et ses ministères",d:"Ecclésiologie, cinq ministères, sacrements"},
+  {icon:"🔥",t:"La prière et le jeûne",d:"Les disciplines spirituelles du prédicateur"},
+  {icon:"📅",t:"La fin des temps",d:"Eschatologie : retour de Christ, jugement, éternité"},
+  {icon:"🗣",t:"L'homilétique",d:"L'art complet de construire et délivrer un sermon"},
+];
+
+function renderModules() {
+  document.getElementById('mod-grid').innerHTML = MODULES.map((m,i) => {
+    const done = STATE.modules.includes(i);
+    return `<div class="mod-card${done?' done':''}" onclick="studyModule(${i})">
+      <div class="m-icon">${m.icon}</div>
+      <h4>${m.t}</h4>
+      <p>${m.d}</p>
+      ${done ? '<div class="mod-status">✓ Terminé</div>' : ''}
+    </div>`;
+  }).join('');
+}
+
+async function studyModule(i) {
+  const m = MODULES[i];
+  const r = document.getElementById('mod-result');
+  r.innerHTML = '<div class="dots"><span></span><span></span><span></span></div> Chargement du module...';
+  r.classList.add('show');
+  r.scrollIntoView({ behavior: 'smooth' });
+  try {
+    const reply = await askClaude(`Donne-moi un enseignement complet sur le module de théologie : "${m.t}" pour un étudiant qui se forme pour prêcher.
+Inclus:
+1. Introduction et définition
+2. Fondements bibliques (avec versets clés)
+3. Points essentiels que tout prédicateur doit maîtriser
+4. Erreurs courantes à éviter (hérésies ou malentendus)
+5. Application pratique dans la prédication
+6. Versets à mémoriser absolument`);
+    r.innerHTML = `<strong style="font-family:Cinzel,serif;color:var(--gold2);font-size:1.15rem;">${m.icon} ${m.t}</strong>\n\n` + reply.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong style="color:var(--gold2)">$1</strong>');
+    if (!STATE.modules.includes(i)) { STATE.modules.push(i); updateStats(); renderModules(); }
+  } catch(e) { r.textContent = 'Erreur. Réessaie.'; }
+}
+
+// ===================== INTERPRÉTATION =====================
+async function loadHermeneutique() {
+  const el = document.getElementById('hermeneutique-content');
+  el.innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
+  try {
+    const reply = await askClaude(`Explique les 7 règles fondamentales d'herméneutique biblique (interprétation de la Bible) pour un futur prédicateur débutant.
+Pour chaque règle, donne:
+- Le nom de la règle
+- Ce qu'elle signifie concrètement
+- Un exemple pratique avec un passage biblique
+- Pourquoi c'est important pour le prédicateur
+Sois clair, pratique et pédagogique.`);
+    el.innerHTML = reply.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong style="color:var(--gold2)">$1</strong>');
+  } catch(e) { el.textContent = 'Erreur.'; }
+}
+
+async function interpreterTexte() {
+  const t = document.getElementById('interp-text').value.trim();
+  if (!t) return alert('Entre un texte biblique à analyser.');
+  const r = document.getElementById('interp-result');
+  r.innerHTML = '⏳ Analyse en cours...';
+  r.classList.add('show');
+  try {
+    const reply = await askClaude(`Analyse en profondeur ce texte biblique pour aider un futur prédicateur à bien l'interpréter : "${t}"
+
+Inclus:
+1. Contexte historique et littéraire
+2. Sens original (langue, culture, époque)
+3. Message principal du passage
+4. Ce que le texte dit sur Dieu / Jésus
+5. Application pour aujourd'hui
+6. Comment prêcher ce texte efficacement
+7. Pièges d'interprétation à éviter`);
+    r.innerHTML = reply.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong style="color:var(--gold2)">$1</strong>');
+  } catch(e) { r.textContent = 'Erreur.'; }
+}
+
+// ===================== SERMON =====================
+async function genSermon() {
+  const verse = document.getElementById('s-verse').value.trim();
+  const theme = document.getElementById('s-theme').value.trim();
+  const audience = document.getElementById('s-audience').value;
+  const dur = document.getElementById('s-dur').value;
+  const ctx = document.getElementById('s-ctx').value.trim();
+  if (!verse && !theme) return alert('Entre au moins un texte ou un thème.');
+  const btn = document.getElementById('sermon-btn');
+  btn.disabled = true; btn.textContent = '⏳ Génération...';
+  const r = document.getElementById('sermon-result');
+  r.classList.remove('show');
+  try {
+    const reply = await askClaude(`Construis un sermon COMPLET et DÉTAILLÉ avec:
+- Texte: ${verse || 'à choisir selon le thème'}
+- Thème: ${theme || 'déduit du texte'}
+- Public: ${audience}
+- Durée: ${dur}
+${ctx ? '- Contexte: ' + ctx : ''}
+
+Structure OBLIGATOIRE:
+═══ TITRE (accrocheur et mémorable) ═══
+INTRODUCTION (accroche forte + annonce du plan)
+CONTEXTE BIBLIQUE
+POINT 1 + verset + illustration
+POINT 2 + verset + illustration
+POINT 3 + verset + illustration
+APPEL À LA DÉCISION
+CONCLUSION + PRIÈRE FINALE
+═══════════════
+Sois concret, vivant, et profondément biblique.`,
+    "Tu es un pasteur expert en homilétique. Tu construis des sermons structurés, inspirants et bibliquement solides. Réponds en français. Utilise des séparateurs visuels clairs pour chaque section.");
+    r.innerHTML = reply.replace(/\n/g,'<br>').replace(/═══(.*?)═══/g,'<strong style="color:var(--gold2);font-family:Cinzel,serif;font-size:1.1rem;">$1</strong>').replace(/\*\*(.*?)\*\*/g,'<strong style="color:var(--gold2)">$1</strong>');
+    r.classList.add('show');
+    STATE.sermons++; updateStats();
+  } catch(e) { r.textContent = 'Erreur.'; r.classList.add('show'); }
+  btn.disabled = false; btn.textContent = '✨ Générer le sermon complet';
+}
+
+async function genPlan() {
+  const verse = document.getElementById('s-verse').value.trim();
+  const theme = document.getElementById('s-theme').value.trim();
+  if (!verse && !theme) return alert('Entre au moins un texte ou un thème.');
+  const r = document.getElementById('sermon-result');
+  r.innerHTML = '⏳ Génération du plan...';
+  r.classList.add('show');
+  try {
+    const reply = await askClaude(`Donne-moi UNIQUEMENT le plan structuré d'un sermon sur : "${verse || theme}" sous forme claire avec titre, 3 points principaux, sous-points et versets. Format concis.`);
+    r.innerHTML = reply.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong style="color:var(--gold2)">$1</strong>');
+  } catch(e) { r.textContent = 'Erreur.'; }
+}
+
+// ===================== EXERCICES =====================
+async function loadExo(type) {
+  const r = document.getElementById('exo-result');
+  r.innerHTML = '⏳ Chargement de l\'exercice...';
+  r.classList.add('show');
+  r.scrollIntoView({behavior:'smooth'});
+  const prompts = {
+    introduction: "Donne-moi un cours complet sur comment capter l'attention au début d'un sermon. Inclus des techniques concrètes, des exemples d'accroches, des erreurs à éviter, et un exercice pratique à faire.",
+    voix: "Donne-moi un cours sur la maîtrise de la voix dans la prédication : projection, débit, pauses, intonation, volume. Inclus des exercices pratiques vocaux à faire chez soi.",
+    illustration: "Apprends-moi à trouver et utiliser des illustrations efficaces dans un sermon. Types d'illustrations, comment les relier au texte, exemples concrets, et exercice pratique.",
+    appel: "Explique-moi comment faire un appel à la décision puissant à la fin d'un sermon. Différents types d'appels, comment les formuler, exemples bibliques et pratiques.",
+    nerveux: "Donne-moi des techniques spirituelles ET pratiques pour surmonter la peur de prêcher devant une assemblée. Inclus des versets de foi, des exercices de préparation mentale, et des conseils pratiques.",
+    texte: "Enseigne-moi comment lire la Bible en public avec émotion, clarté et impact. Techniques de lecture à voix haute, comment préparer sa lecture, exercices pratiques.",
+    memoire: "Donne-moi les meilleures techniques pour mémoriser des versets bibliques. Méthodes pratiques, systèmes de révision, exercices quotidiens, et une liste de versets essentiels à mémoriser.",
+    "mini-sermon": "Explique-moi comment prêcher un message complet en 3 minutes. Structure, choix du texte, discipline du temps, et donne-moi un exemple de mini-sermon de 3 minutes que je peux pratiquer."
+  };
+  try {
+    const reply = await askClaude(prompts[type] || 'Donne-moi des exercices de prédication pratiques.');
+    r.innerHTML = reply.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong style="color:var(--gold2)">$1</strong>');
+  } catch(e) { r.textContent = 'Erreur.'; }
+}
+
+// ===================== MENTOR CHAT =====================
+function addMsg(role, html) {
+  const box = document.getElementById('chat-box');
+  const d = document.createElement('div');
+  d.className = 'msg ' + role;
+  d.innerHTML = `<div class="avatar">${role==='ai'?'✝':'👤'}</div><div class="bubble">${html}</div>`;
+  box.appendChild(d);
+  box.scrollTop = box.scrollHeight;
+}
+
+async function chat(override) {
+  const inp = document.getElementById('chat-in');
+  const txt = override || inp.value.trim();
+  if (!txt) return;
+  inp.value = '';
+  addMsg('user', txt);
+  STATE.chatHistory.push({role:'user',content:txt});
+  document.getElementById('send-btn').disabled = true;
+
+  const box = document.getElementById('chat-box');
+  const typing = document.createElement('div');
+  typing.className = 'msg ai'; typing.id = 'typing';
+  typing.innerHTML = '<div class="avatar">✝</div><div class="bubble"><div class="dots"><span></span><span></span><span></span></div></div>';
+  box.appendChild(typing);
+  box.scrollTop = box.scrollHeight;
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        model:"claude-sonnet-4-20250514", max_tokens:1000,
+        system:"Tu es un mentor biblique expert, pasteur évangélique expérimenté et théologien. Réponds UNIQUEMENT en français. Tu es pédagogue, encourageant et profondément biblique. Tu cites des versets précis. Tu aides l'utilisateur à se former pour prêcher l'Évangile de Jésus-Christ.",
+        messages: STATE.chatHistory
+      })
+    });
+    const d = await res.json();
+    const reply = d.content?.[0]?.text || "Erreur.";
+    document.getElementById('typing')?.remove();
+    addMsg('ai', reply.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong style="color:var(--gold2)">$1</strong>'));
+    STATE.chatHistory.push({role:'assistant',content:reply});
+  } catch(e) {
+    document.getElementById('typing')?.remove();
+    addMsg('ai','Erreur réseau. Réessaie.');
+  }
+  document.getElementById('send-btn').disabled = false;
+}
+
+function qk(q) { chat(q); }
+
+document.getElementById('chat-in')?.addEventListener('input', function() {
+  this.style.height = '52px';
+  this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+});
+
+// ===================== QUIZ =====================
+async function runQuiz() {
+  const cat = document.getElementById('q-cat').value;
+  const lvl = document.getElementById('q-lvl').value;
+  const btn = document.getElementById('quiz-btn');
+  btn.disabled = true; btn.textContent = '⏳ Génération...';
+  const r = document.getElementById('quiz-result');
+  r.classList.remove('show');
+  try {
+    const reply = await askClaude(`Génère exactement 5 questions QCM sur "${cat}" niveau "${lvl}" pour un étudiant qui se forme pour prêcher.
+Pour chaque question:
+QUESTION X: [question]
+A) [option]
+B) [option]
+C) [option]
+D) [option]
+✓ RÉPONSE: [lettre) explication biblique courte]
+
+Sois précis, bibliquement exact et pédagogique.`,
+    "Tu es professeur de théologie. Crée des quiz précis et pédagogiques. Réponds en français.");
+    r.innerHTML = '<h3 style="font-family:Cinzel,serif;color:var(--gold2);margin-bottom:16px;">📝 '+cat+'</h3>' + reply.replace(/\n/g,'<br>').replace(/✓(.*)/g,'<strong style="color:#6E6">✓$1</strong>').replace(/QUESTION (\d+)/g,'<strong style="color:var(--gold2);font-size:1.05rem;">QUESTION $1</strong>');
+    r.classList.add('show');
+    STATE.quizzes++; updateStats();
+  } catch(e) { r.textContent = 'Erreur.'; r.classList.add('show'); }
+  btn.disabled = false; btn.textContent = '🎲 Générer 5 questions';
+}
+
+// ===================== JOURNAL =====================
+function saveJournal() {
+  const title = document.getElementById('j-title').value.trim();
+  const verse = document.getElementById('j-verse').value.trim();
+  const text = document.getElementById('j-text').value.trim();
+  if (!title && !text) return alert('Écris quelque chose !');
+  const entry = {
+    id: Date.now(),
+    date: new Date().toLocaleDateString('fr-FR'),
+    title: title || 'Note du jour',
+    verse, text
+  };
+  STATE.journal.unshift(entry);
+  updateStats();
+  renderJournal();
+  document.getElementById('j-title').value = '';
+  document.getElementById('j-verse').value = '';
+  document.getElementById('j-text').value = '';
+  document.getElementById('j-insight').classList.remove('show');
+}
+
+function renderJournal() {
+  const el = document.getElementById('journal-list');
+  if (!STATE.journal.length) {
+    el.innerHTML = '<div style="color:var(--muted);font-style:italic;padding:20px 0;">Tes entrées apparaîtront ici...</div>';
+    return;
+  }
+  el.innerHTML = STATE.journal.map(e => `
+    <div class="journal-entry">
+      <div class="j-date">📅 ${e.date}${e.verse ? ' · ' + e.verse : ''}</div>
+      <div class="j-title">${e.title}</div>
+      <div class="j-text">${e.text}</div>
+    </div>
+  `).join('');
+}
+
+async function aiInsight() {
+  const text = document.getElementById('j-text').value.trim();
+  const verse = document.getElementById('j-verse').value.trim();
+  if (!text && !verse) return alert('Écris d\'abord quelque chose dans le journal.');
+  const r = document.getElementById('j-insight');
+  r.textContent = '⏳ Réflexion spirituelle en cours...';
+  r.classList.add('show');
+  try {
+    const reply = await askClaude(`Un futur prédicateur a écrit cette réflexion spirituelle: "${text}"${verse ? ' (basée sur ' + verse + ')' : ''}.
+Donne-lui:
+1. Une réflexion spirituelle approfondie sur ce qu'il a écrit
+2. Des versets complémentaires qui enrichissent sa pensée
+3. Un encouragement personnel pour son ministère
+4. Une piste de sermon à développer à partir de cette réflexion`);
+    r.innerHTML = reply.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong style="color:var(--gold2)">$1</strong>');
+  } catch(e) { r.textContent = 'Erreur.'; }
+}
+
+// ===================== VERSET DU JOUR =====================
+const VERSETS = [
+  ["Car la Parole de Dieu est vivante et efficace, plus tranchante qu'une épée à deux tranchants…","Hébreux 4:12"],
+  ["Prêche la Parole, insiste en toute occasion, favorable ou non…","2 Timothée 4:2"],
+  ["Comment croiront-ils en celui dont ils n'ont pas entendu parler ? Et comment en entendront-ils parler, sans prédicateur ?","Romains 10:14"],
+  ["Va, fais de toutes les nations des disciples, les baptisant et leur enseignant…","Matthieu 28:19-20"],
+  ["Ce n'est pas par la puissance, ni par la force, mais c'est par mon Esprit, dit l'Éternel…","Zacharie 4:6"],
+  ["Que ma parole et ma prédication ne reposent pas sur les discours persuasifs de la sagesse humaine, mais sur la démonstration de l'Esprit et de la puissance","1 Corinthiens 2:4"],
+  ["La foi vient de ce qu'on entend, et ce qu'on entend vient de la parole de Christ","Romains 10:17"],
+  ["Sois fort et courageux ! Ne te décourage pas, car l'Éternel, ton Dieu, est avec toi partout où tu iras","Josué 1:9"],
+];
+
+let vIdx = 0;
+function loadVersetJour() {
+  vIdx = (vIdx + 1) % VERSETS.length;
+  const el = document.getElementById('verset-jour');
+  const v = VERSETS[vIdx];
+  el.innerHTML = `« ${v[0]} » <span class="verse-ref">— ${v[1]}</span>`;
+}
+
+function renderTodayPlan() {
+  const next = PLAN[STATE.jours.length] || PLAN[29];
+  const el = document.getElementById('today-plan-preview');
+  el.innerHTML = `<div style="color:var(--muted);font-size:0.8rem;margin-bottom:4px;">Prochain : ${next[0]}</div>
+  <div style="font-family:Cinzel,serif;color:var(--gold2);margin-bottom:6px;">${next[1]}</div>
+  <div class="verse-block" style="margin:0;font-size:1rem;">${next[2]}<span class="verse-ref">${next[3]}</span></div>`;
+}
+
+// ===================== INIT =====================
+loadState();
+renderPlan();
+renderBooks();
+renderModules();
+renderJournal();
+renderTodayPlan();
+updateStats();
+</script>
+</body>
+</html>
